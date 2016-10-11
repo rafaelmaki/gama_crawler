@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-br" ng-app="primeiroEnemAdmin">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Crawler Youtube</title>
+
+        <link rel="stylesheet" href="css/table.css">
+        <script src="../../lib/angular/angular.min.js"></script>
+        <script src="../../lib/lodash/lodash.js"></script>
+        <script src="../../lib/moment/moment.js"></script>
+        <script src="../../lib/moment/locale/br.js"></script>
+        <script src="../../lib/json-export-excel/dest/json-export-excel.min.js"></script>
+        <script src="../../lib/file-saver/FileSaver.min.js"></script>
+        <script src="js/youtubeCtrl.js"></script>
+    </head>
+    <body class="grid grid-video" ng-controller="YoutubeCtrl" >
+        <header>
+            <h2>Crawler Youtube</h2>
+        </header>
+        <div>
+            <label for="keyword">Keyword: </label>
+            <input type="text" placeholder="Digite a keyword para busca" ng-model="model.keyword"
+                            name="keyword" id="keyword"
+                            style="margin-right: 20px" ng-disabled="searching">
+            <label for="country">País: </label>
+            <input type="text" placeholder="Digite o país para busca" ng-model="model.country"
+                            name="country" id="country"
+                            style="margin-right: 20px" ng-disabled="searching">
+        </div>
+        <div>
+            <label for="minimo">Mínimo: </label>
+            <input type="number" placeholder="Mínimo de subscribers" ng-model="model.minimo"
+                name="minimo" id="minimo" ng-disabled="searching">
+            <label for="maximo">Máximo: </label>
+            <input type="number" placeholder="Máximo de subscribers" ng-model="model.maximo"
+                name="maximo" id="maximo" ng-disabled="searching">
+            <button type="button" ng-click="buscarPaginas()" ng-disabled="searching">Listar</button>
+        </div>
+        <div ng-if="mostrarTotal">
+            <hr>
+            <button ng-json-export-excel data="pages" 
+                report-fields="{keyword: 'Palavra Chave', pagina: 'Página', link: 'URL', 
+                inscritos: 'Número de Incritos', pais: 'País'}" 
+                filename="'links_youtube'" class="btn-sm btn-primary">Exportar para Excel</button>
+            </button>
+            <hr>
+        </div>
+        <div ng-if="mostrarTotal">
+            <h4>Total de páginas: {{total}}</h4>
+        </div>
+        <div ng-if="error">
+            <h4>{{error}}</h4>
+        </div>
+        <div ng-if="mostrarLista"> 
+            <table>
+                <!--<tr>
+                    <th>Nome</th>
+                    <th>Email</th> 
+                    <th>IP</th>
+                    <th>Data de Contato</th>
+                </tr>
+                <tr ng-repeat="contato in contatos">
+                    <td>{{ contato.nome }}</td>
+                    <td>{{ contato.email  }}</td>
+                    <td>{{ contato.ipaddress  }}</td>
+                    <td>{{ contato.data_contato  }}</td>
+                </tr>-->
+                <tr>
+                    <th>Palavra Chave</th>
+                    <th>Página</th> 
+                    <th>URL</th>
+                    <th>Número de Incritos</th>
+                    <th>País</th>
+                </tr>
+                <tr ng-repeat="page in pages track by $index">
+                    <td>{{ page.keyword }}</td>
+                    <td>{{ page.pagina  }}</td>
+                    <td>{{ page.link  }}</td>
+                    <td>{{ page.inscritos  }}</td>
+                    <td>{{ page.pais  }}</td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>

@@ -1,1 +1,5 @@
 node_modules/
+public/lib/
+web.config
+.vscode/launch.json
+iisnode.yml

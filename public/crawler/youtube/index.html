@@ -20,23 +20,23 @@
             <h2>Crawler Youtube</h2>
         </header>
         <div>
-            <label for="keyword">Keyword: </label>
+            <label for="keyword" style="margin-bottom: 10px">Keyword: </label>
             <input type="text" placeholder="Digite a keyword para busca" ng-model="model.keyword"
                             name="keyword" id="keyword"
-                            style="margin-right: 20px" ng-disabled="searching">
-            <label for="country">País: </label>
+                            style="margin-right: 20px; margin-bottom: 10px" ng-disabled="searching">
+            <label for="country" style="margin-bottom: 10px">País: </label>
             <input type="text" placeholder="Digite o país para busca" ng-model="model.country"
                             name="country" id="country"
-                            style="margin-right: 20px" ng-disabled="searching">
-        </div>
-        <div>
-            <label for="minimo">Mínimo: </label>
+                            style="margin-right: 20px; margin-bottom: 10px" ng-disabled="searching">
+            <label for="minimo" style="margin-bottom: 10px">Mínimo: </label>
             <input type="number" placeholder="Mínimo de subscribers" ng-model="model.minimo"
-                name="minimo" id="minimo" ng-disabled="searching">
-            <label for="maximo">Máximo: </label>
+                name="minimo" id="minimo" ng-disabled="searching"
+                style="margin-right: 20px; margin-bottom: 10px">
+            <label for="maximo" style="margin-bottom: 10px">Máximo: </label>
             <input type="number" placeholder="Máximo de subscribers" ng-model="model.maximo"
-                name="maximo" id="maximo" ng-disabled="searching">
-            <button type="button" ng-click="buscarPaginas()" ng-disabled="searching">Listar</button>
+                name="maximo" id="maximo" ng-disabled="searching"
+                style="margin-right: 20px; margin-bottom: 10px">
+            <button style="margin-bottom: 10px" type="button" ng-click="buscarPaginas()" ng-disabled="searching">Listar</button>
         </div>
         <div ng-if="mostrarTotal">
             <hr>

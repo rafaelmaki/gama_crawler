@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Crawler Facebook</title>
+        <title>Crawler Instagram</title>
 
         <link rel="stylesheet" href="css/table.css">
         <script src="../../lib/angular/angular.min.js"></script>
@@ -13,11 +13,11 @@
         <script src="../../lib/moment/locale/br.js"></script>
         <script src="../../lib/json-export-excel/dest/json-export-excel.min.js"></script>
         <script src="../../lib/file-saver/FileSaver.min.js"></script>
-        <script src="js/facebookCtrl.js"></script>
+        <script src="js/instagramCtrl.js"></script>
     </head>
-    <body class="grid grid-video" ng-controller="FacebookCtrl" >
+    <body class="grid grid-video" ng-controller="InstagramCtrl" >
         <header>
-            <h2>Crawler Facebook</h2>
+            <h2>Crawler Instagram</h2>
         </header>
         <div>
             <label for="keyword" style="margin-bottom: 10px">Keyword: </label>
@@ -37,9 +37,9 @@
         <div ng-if="mostrarTotal">
             <hr>
             <button ng-json-export-excel data="pages" 
-                report-fields="{keyword: 'Palavra Chave', pagina: 'Página', link: 'URL', 
-                likes: 'Número de Likes', categoria: 'Categoria', site: 'Site', descricao: 'Descricao'}" 
-                filename="'links_facebook'" class="btn-sm btn-primary">Exportar para Excel</button>
+                report-fields="{keyword: 'Palavra Chave', name: 'Página', link: 'URL', 
+                followers: 'Número de Seguidores', country: 'País'}" 
+                filename="'links_instagram'" class="btn-sm btn-primary">Exportar para Excel</button>
             </button>
             <hr>
         </div>
@@ -55,19 +55,15 @@
                     <th>Palavra Chave</th>
                     <th>Página</th> 
                     <th>URL</th>
-                    <th>Número de Likes</th>
-                    <th>Categoria</th>
-                    <th>Site</th>
-                    <th>Descricao</th>
+                    <th>Número de Seguidores</th>
+                    <th>País</th>
                 </tr>
                 <tr ng-repeat="page in pages track by $index">
                     <td>{{ page.keyword }}</td>
-                    <td>{{ page.pagina  }}</td>
+                    <td>{{ page.name  }}</td>
                     <td>{{ page.link  }}</td>
-                    <td>{{ page.likes  }}</td>
-                    <td>{{ page.categoria  }}</td>
-                    <td>{{ page.site  }}</td>
-                    <td>{{ page.descricao  }}</td>
+                    <td>{{ page.followers  }}</td>
+                    <td>{{ page.country  }}</td>
                 </tr>
             </table>
         </div>

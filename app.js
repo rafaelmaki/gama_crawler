@@ -26,7 +26,7 @@ var index = require('./routes/index');
 app.use('/', index);
 
 // Define a porta onde será executada nossa aplicação
-var port = process.env.port || 5000;
+var port = process.env.port || 9000;
 app.listen(port);
 // Imprime uma mensagem no console
 console.log("Aplicação executada na porta ", port);

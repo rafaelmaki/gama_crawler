@@ -19,3 +19,4 @@ Redes disponpiveis:
 
 Youtube
 Facebook
+Instagram

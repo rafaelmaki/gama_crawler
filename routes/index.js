@@ -119,7 +119,7 @@ router.post('/api/crawler/facebook', function (req, res) {
                         console.log(JSON.stringify(pageInfo));
                         pages.push(pageInfo);
                     }
-                    setTimeout(console.log(''), 2000);
+                    setTimeout(console.log(''), 1000);
                 });
             }
 
@@ -135,6 +135,70 @@ router.post('/api/crawler/facebook', function (req, res) {
     res.json(pages).end();
 });
  
+router.post('/api/crawler/instagram', function (req, res) {
+    var urlPrefix = 'https://websta.me/search/';
+    var instagramUrl = 'https://www.instagram.com/';
+    var keyword = req.body.keyword;
+    keyword = replaceAll(keyword, ' ', '+');
+    var MIN = req.body.minimo;
+    var MAX = req.body.maximo;
+    var nextPage = urlPrefix + keyword;
+    var hasMorePages = true;
+    var pages = [];
+
+    while (hasMorePages){
+        var reqResult = syncRequest('GET', nextPage);
+        if (reqResult.statusCode == 200) {
+            nextPage = '';
+            hasMorePages = false;
+
+            var $ = cheerio.load(reqResult.getBody());
+
+            var datareact = $('body > div.wrapper > div > section:nth-child(3) > div.row.search-result > div.col-md-6.search-result-users > div > div.box-body > div');
+
+            if(datareact) {
+                var jsonObj = JSON.parse(datareact[0].attribs['data-react-props']);
+            }
+
+            jsonObj.data.forEach(function(item, i) {
+                var pageId = item.username;
+                var name = item.full_name || item.username;
+                var pageUrl = instagramUrl + pageId;
+                var followers = 0;
+
+                var reqResult2 = syncRequest('GET', pageUrl);
+                var $2 = cheerio.load(reqResult2.getBody());
+                var pageData = $2('body > script').text();
+
+                if(verifyCountry(pageData)) {
+                    followers = getFollowers(pageData);
+                    var followersNum = parseInt(followers);          
+                        if (followersNum >= MIN && followersNum <= MAX) {
+                        var page = {
+                            keyword: keyword,
+                            name: name,
+                            link: pageUrl,
+                            followers: followers,
+                            country: 'Brasil'
+                        }
+                        console.log(JSON.stringify(page));
+                        pages.push(page);
+                    }
+                }  
+            });
+
+        } else {
+            nextPage = '';
+            console.log('ERROR:    ' + res.statusCode);
+            hasMorePages = false;
+        }
+    }
+
+    var myJsonString = JSON.stringify(pages);
+
+    res.json(pages).end();
+});
+
 // Rota para index.html
 router.get('/', function(req, res) {   
     var options = {
@@ -201,4 +265,19 @@ function getFacebookPageDetais(id, title, keyword) {
   return pageInfo;
 }
  
+function verifyCountry(data) {
+    var countryCode = '\"country_code\": \"BR\"';
+    if(data.indexOf(countryCode) !== -1) {
+        return true;
+    }
+    return false;
+}
+
+function getFollowers(data) {
+    var dataArr = data.split('\"followed_by\": {\"count\": ');
+    var dataFollowed = dataArr[1].split('},')[0];
+
+    return dataFollowed;
+}
+
 module.exports = router;

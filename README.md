@@ -11,8 +11,11 @@ bower install
 Executar:
 npm app.js
 
+Necessário criar um arquivo config.json com uma facebook user access token válido (exemplo em /config/configExample.json)
+
 Parâmetros de pesquisa: Palavras-chave, país, número de inscritos (mínimo e máximo)
 
 Redes disponpiveis:
 
 Youtube
+Facebook

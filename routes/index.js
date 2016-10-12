@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var syncRequest = require('sync-request');
 var cheerio = require('cheerio');
+var config = require('../config/config.json');
 
 router.post('/api/crawler/youtube', function (req, res) {
     var urlPrefix = 'https://www.youtube.com';
@@ -80,6 +81,59 @@ router.post('/api/crawler/youtube', function (req, res) {
 
     res.json(pages).end();
 });
+
+router.post('/api/crawler/facebook', function (req, res) {
+    var urlPrefix = 'https://graph.facebook.com/v2.8/search?access_token=';
+    var urlMidle = '&debug=all&format=json&method=get&pretty=0&q=';
+    var urlSufix = '&suppress_http_code=1&type=page';
+    var keyword = req.body.keyword;
+    keyword = replaceAll(keyword, ' ', '+');
+    var nextPage = urlPrefix + config.facebookAccessToken + urlMidle + keyword + urlSufix;
+    var MIN = req.body.minimo;
+    var MAX = req.body.maximo;
+    var hasMorePages = true;
+    var pages = [];
+
+    while (hasMorePages){
+        var reqResult = syncRequest('GET', nextPage);
+        if (reqResult.statusCode == 200) {
+            nextPage = '';
+            hasMorePages = false;
+
+            var resultJson = JSON.parse(reqResult.getBody('utf8'));
+
+            //Verifica se existe mais páginas para buscas
+            if(resultJson.paging) {
+                nextPage = resultJson.paging.next;
+                if(nextPage) {
+                    hasMorePages = true;
+                }
+            }
+
+            if(resultJson.data) {
+                resultJson.data.forEach(function(item, i) {
+                    var pageId = item.id;
+                    var pageInfo = getFacebookPageDetais(pageId, item.name, keyword);
+                    var likesNum = parseInt(pageInfo.likes);          
+                    if (likesNum >= MIN && likesNum <= MAX) {
+                        console.log(JSON.stringify(pageInfo));
+                        pages.push(pageInfo);
+                    }
+                    setTimeout(console.log(''), 2000);
+                });
+            }
+
+        } else {
+            nextPage = '';
+            console.log('ERROR:    ' + res.statusCode);
+            hasMorePages = false;
+        }
+    }
+
+    var myJsonString = JSON.stringify(pages);
+
+    res.json(pages).end();
+});
  
 // Rota para index.html
 router.get('/', function(req, res) {   
@@ -121,6 +175,30 @@ function getCountryYoutube(page) {
 
 function replaceAll(str, find, replace) {
   return str.replace(new RegExp(find, 'g'), replace);
+}
+
+function getFacebookPageDetais(id, title, keyword) {
+  var prefix = 'https://graph.facebook.com/v2.8/';
+  var midle = '?access_token=';
+  var sufix = '&debug=all&fields=about%2Cfan_count%2Ccategory%2Cgeneral_info%2Chometown%2Clocation%2Cwebsite&format=json&method=get&pretty=0&suppress_http_code=1;'
+  var pageUrl = prefix + id + midle + config.facebookAccessToken + sufix;
+
+  var link = 'https://www.facebook.com/' + id;
+
+  var reqResult = syncRequest('GET', pageUrl);
+  var resultJson = JSON.parse(reqResult.getBody('utf8'));
+
+  var pageInfo = {
+    keyword: keyword,
+    pagina: title,
+    link: link,
+    descricao: resultJson.about,
+    likes: resultJson.fan_count,
+    categoria: resultJson.category,
+    site: resultJson.website
+  }
+
+  return pageInfo;
 }
  
 module.exports = router;
